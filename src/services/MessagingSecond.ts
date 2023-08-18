@@ -26,9 +26,13 @@ export default async function getData(): Promise<RabbitData | null> {
     await channel.close();
     await connection.close();
 
-    return JSON.parse(msg.content.toString());
+    const result = JSON.parse(msg.content.toString());
+
+    // console.log(result);
+
+    return result;
   } catch (e) {
-    console.log(e);
+    console.log('rabbit error: ' + e);
     return null;
   }
 }

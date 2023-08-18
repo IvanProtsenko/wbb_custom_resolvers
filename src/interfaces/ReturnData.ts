@@ -1,6 +1,6 @@
 export default interface ReturnData {
   service_name: string;
-  instance_uuid: string;
-  current_workers: number;
+  instance_uuid: string | null;
+  current_workers: number | null;
   max_workers: number;
 }

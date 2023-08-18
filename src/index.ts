@@ -19,6 +19,11 @@ const typeDefs = gql`
     max_workers: Int
   }
 
+  type WorkerResponce {
+    total_max_workers: Int
+    total_current_workers: Int
+  }
+
   type Mutation {
     sendMessage(payload: messageRequest): String!
   }
@@ -26,6 +31,7 @@ const typeDefs = gql`
   type Query {
     Orders(id: ID!): ID!
     getData: [ReturnData]
+    getWorkersCount: WorkerResponce!
   }
 `;
 
@@ -50,6 +56,34 @@ const resolvers = {
         if (response) {
           const result: ReturnData[] = convertToReturnData(response);
           return result;
+        }
+        return 'error';
+      } catch (err: any) {
+        console.log(err);
+        return 'error';
+      }
+    },
+    getWorkersCount: async (
+      parent: any,
+      args: any,
+      context: any,
+      info: any
+    ) => {
+      try {
+        const response = await getData();
+        let total_max_workers: number = 0;
+        let total_current_workers: number = 0;
+        if (response) {
+          response.payload.forEach((payload) => {
+            total_max_workers += payload.max_workers;
+            total_current_workers += payload.node
+              ? payload.node.payload.workers_count
+              : 0;
+          });
+          return {
+            total_max_workers,
+            total_current_workers,
+          };
         }
         return 'error';
       } catch (err: any) {
