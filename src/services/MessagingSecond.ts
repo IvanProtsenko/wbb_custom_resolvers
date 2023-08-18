@@ -1,16 +1,17 @@
 import amqplib from 'amqplib';
 import { Buffer } from 'buffer';
 import { RabbitData } from '../interfaces/RabbitData';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const sleep = (delay: any) =>
   new Promise((resolve) => setTimeout(resolve, delay));
 
 export default async function getData(): Promise<RabbitData | null> {
   try {
-    const queue = 'worker-manager';
-    const connection = await amqplib.connect(
-      'amqp://TradeBot:62fj45l65%27b26456@amqp.console-bot.com:5672/Trading'
-    );
+    const queue = process.env.WORKER_QUEUE!;
+    const connection = await amqplib.connect(process.env.AMQP_URL!);
     const channel = await connection.createChannel();
 
     const responseQueue = await channel.assertQueue('', { exclusive: true });
