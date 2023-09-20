@@ -5,5 +5,6 @@ export interface AliveData {
     uuid: string;
     start_time: bigint;
     work_time_ms: bigint;
+    profile_email: string;
   }[];
 }

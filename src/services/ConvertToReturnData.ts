@@ -1,6 +1,11 @@
 import { RabbitData } from '../interfaces/RabbitData';
 import ReturnData from '../interfaces/ReturnData';
 
+function checkIfEmail(testForEmail: string) {
+  let regex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
+  return regex.test(testForEmail)
+}
+
 export default function convertToReturnData(data: RabbitData): ReturnData[] {
   const result: ReturnData[] = [];
 
@@ -9,7 +14,7 @@ export default function convertToReturnData(data: RabbitData): ReturnData[] {
       payload.node.payload.alive[0].instances.forEach((instance) => {
         let oneReturnData: ReturnData = {
           service_name: payload.node_queue,
-          instance_uuid: instance.uuid,
+          instance_uuid: checkIfEmail(instance.profile_email) ? instance.profile_email : instance.uuid,
           current_workers: payload.node.payload.workers_count,
           max_workers: payload.max_workers,
         };
