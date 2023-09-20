@@ -8,7 +8,7 @@ dotenv.config();
 const sleep = (delay: any) =>
   new Promise((resolve) => setTimeout(resolve, delay));
 
-export default async function getData(): Promise<RabbitData | null> {
+export async function getData(): Promise<RabbitData | null> {
   try {
     const queue = process.env.WORKER_QUEUE!;
     const connection = await amqplib.connect(process.env.AMQP_URL!);
@@ -34,6 +34,30 @@ export default async function getData(): Promise<RabbitData | null> {
   } catch (e) {
     console.log('rabbit error: ' + e);
     return null;
+  }
+}
+
+export async function pullData(serviceNames: string[]): Promise<void> {
+  try {
+    const queue = process.env.WORKER_QUEUE!;
+    const connection = await amqplib.connect(process.env.AMQP_URL!);
+    const channel = await connection.createChannel();
+
+    serviceNames.map(async (serviceName) => {
+      const data = { 
+        command: 5,
+        payload: {
+            "name": 'spider-client',
+            "server_id": serviceName
+        } 
+      };
+      channel.sendToQueue(queue, Buffer.from(JSON.stringify(data)));
+    })
+
+    await channel.close();
+    await connection.close();
+  } catch (e) {
+    console.log('rabbit error: ' + e);
   }
 }
 

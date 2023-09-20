@@ -1,6 +1,6 @@
 import { ApolloServer, gql } from 'apollo-server';
 import dotenv from 'dotenv';
-import getData from './services/MessagingSecond';
+import { getData, pullData } from './services/MessagingSecond';
 import convertToReturnData from './services/ConvertToReturnData';
 import ReturnData from './interfaces/ReturnData';
 
@@ -32,6 +32,7 @@ const typeDefs = gql`
     Orders(id: ID!): ID!
     getData: [ReturnData]
     getWorkersCount: WorkerResponce!
+    pullData(service_names: [String]): String
   }
 `;
 
@@ -86,6 +87,15 @@ const resolvers = {
           };
         }
         return 'error';
+      } catch (err: any) {
+        console.log(err);
+        return 'error';
+      }
+    },
+    pullData: async (parent: any, args: any, context: any, info: any) => {
+      try {
+        await pullData(args.service_names);
+        return 'success';
       } catch (err: any) {
         console.log(err);
         return 'error';

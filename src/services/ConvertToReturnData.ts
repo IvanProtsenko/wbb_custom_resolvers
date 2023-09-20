@@ -5,8 +5,7 @@ export default function convertToReturnData(data: RabbitData): ReturnData[] {
   const result: ReturnData[] = [];
 
   data.payload.forEach((payload) => {
-    console.log(payload);
-    if (payload.node) {
+    if (payload.node && payload.node.payload.alive[0].instances.length > 0) {
       payload.node.payload.alive[0].instances.forEach((instance) => {
         let oneReturnData: ReturnData = {
           service_name: payload.node_queue,
